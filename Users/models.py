@@ -28,11 +28,14 @@ class Group(models.Model):
 
 
 class Post(models.Model):
+    def __str__(self):
+        return str(self.content)
     poster_ID = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     content = models.TextField(max_length=1024)
     Time = models.DateField(auto_now_add=True)
     postImg = models.ImageField(blank=True, null=True)
-    group_ID = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True)
+    group_ID = models.ForeignKey(
+        Group, blank=True, on_delete=models.DO_NOTHING, null=True)
 
 
 class Message(models.Model):
