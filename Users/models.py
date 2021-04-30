@@ -85,3 +85,5 @@ class Comment(models.Model):
         Post, on_delete=models.DO_NOTHING, related_name='post')
     Time = models.DateField(auto_now_add=True)
     content = models.TextField(max_length=1024)
+
+
