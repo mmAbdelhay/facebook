@@ -58,6 +58,7 @@ class Friends(models.Model):
                             related_name='friend')
 
 
+
 class join(models.Model):
     class Meta:
         unique_together = (('UID', 'GID'),)
@@ -65,6 +66,19 @@ class join(models.Model):
                             related_name='User')
     GID = models.ForeignKey(Group, on_delete=models.DO_NOTHING,
                             related_name='Group')
+    pending = 'pending'
+    accepted = 'accepted'
+    rejected = 'rejected'
+    joining_status = (
+        (pending, 'pending'),
+        (accepted, 'accepted'),
+        (rejected, 'rejected')
+    )
+    status = models.CharField(
+        max_length=100,
+        choices=joining_status,
+        default=pending,
+    )
 
 
 class Like(models.Model):
