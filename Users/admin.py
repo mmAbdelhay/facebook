@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Profile, Friends, Post, Group, Message, join, Like, Comment
+
+from groups.models import join, Group
+from .models import Profile, Friends, Post, Message, Like, Comment
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 

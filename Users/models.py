@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from groups.models import Group
 
 
 class Profile(models.Model):
@@ -21,10 +24,6 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birth_date = models.DateField(null=True, blank=True)
     profileImg = models.ImageField()
-
-
-class Group(models.Model):
-    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
 
 class Post(models.Model):
@@ -56,29 +55,6 @@ class Friends(models.Model):
                             related_name='main_User')
     FID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
                             related_name='friend')
-
-
-
-class join(models.Model):
-    class Meta:
-        unique_together = (('UID', 'GID'),)
-    UID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
-                            related_name='User')
-    GID = models.ForeignKey(Group, on_delete=models.DO_NOTHING,
-                            related_name='Group')
-    pending = 'pending'
-    accepted = 'accepted'
-    rejected = 'rejected'
-    joining_status = (
-        (pending, 'pending'),
-        (accepted, 'accepted'),
-        (rejected, 'rejected')
-    )
-    status = models.CharField(
-        max_length=100,
-        choices=joining_status,
-        default=pending,
-    )
 
 
 class Like(models.Model):
