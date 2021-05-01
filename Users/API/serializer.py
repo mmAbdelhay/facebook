@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from Users.models import Message
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -21,3 +22,9 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             user.set_password(self.validated_data.get('password'))
             user.save()
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['receiverID', 'Time', 'content']

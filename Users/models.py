@@ -44,7 +44,7 @@ class Message(models.Model):
         User, on_delete=models.DO_NOTHING, related_name='sender')
     receiverID = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name='receiver')
-    Time = models.DateField(auto_now_add=True)
+    Time = models.DateTimeField(auto_now_add=True)
     content = models.TextField(max_length=1024)
 
 
@@ -75,4 +75,3 @@ class Comment(models.Model):
         Post, on_delete=models.DO_NOTHING, related_name='post')
     Time = models.DateField(auto_now_add=True)
     content = models.TextField(max_length=1024)
-
