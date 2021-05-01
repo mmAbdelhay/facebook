@@ -76,4 +76,3 @@ class Comment(models.Model):
     Time = models.DateField(auto_now_add=True)
     content = models.TextField(max_length=1024)
 
-
