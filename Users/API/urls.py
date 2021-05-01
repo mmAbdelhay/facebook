@@ -6,5 +6,8 @@ urlpatterns = [
     path("login", obtain_auth_token),
     path("signup", apiViews.api_signup),
     path("getMessages", apiViews.get_all_messages),
-    path("getConversation/<str:username>", apiViews.get_conversation)
+    path("getConversation/<str:username>", apiViews.get_conversation),
+    path("getUser", apiViews.get_user)
 ]
+
+#"token": "532d33f021815898c4e7753a29842afa18792ecf"

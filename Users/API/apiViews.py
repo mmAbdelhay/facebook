@@ -1,14 +1,14 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from Users.API.serializer import UserSerializer, MessageSerializer
+from Users.API.serializer import UserSerializer, MessageSerializer, ProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from Users.models import Message
-
+from Users.models import Profile
 
 @api_view(["POST"])
 def api_signup(request):
@@ -42,6 +42,26 @@ def get_all_messages(request):
 
     print(responeDictionary)
     return JsonResponse({'Messages': responeDictionary}, safe=False, status=status.HTTP_200_OK)
+
+
+
+
+
+@api_view(["GET"])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def get_user(request):
+    user = Profile.objects.filter(id=request.user.id)
+    serializer =ProfileSerializer(user, many=True)
+
+    return JsonResponse({'user': serializer.data}, safe=False, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
 
 
 @api_view(["GET"])
