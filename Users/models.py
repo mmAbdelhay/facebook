@@ -21,7 +21,8 @@ class Profile(models.Model):
         choices=Gender,
         default=MALE,
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='profile')
     birth_date = models.DateField(null=True, blank=True)
     profileImg = models.ImageField()
 
@@ -55,6 +56,17 @@ class Friends(models.Model):
                             related_name='main_User')
     FID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
                             related_name='friend')
+
+    Pending = 'Pending'
+    Accepted = 'Friends'
+    Status = (
+        (Pending, 'Pending'),
+        (Accepted, 'Friends'),
+    )
+    status = models.CharField(
+        max_length=15,
+        choices=Status
+    )
 
 
 class Like(models.Model):
