@@ -50,7 +50,7 @@ class FriendsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Friends
-        fields = ['FriendName']
+        fields = ['FriendName', 'status']
 
 
 class CreatedGroupsSerializer(serializers.ModelSerializer):
