@@ -8,7 +8,10 @@ urlpatterns = [
     path("getMessages", apiViews.get_all_messages),
     path("getConversation/<str:username>", apiViews.get_conversation),
     path("getUser", apiViews.get_user),
-    path("updateInfo", apiViews.update_Info)
+    path("updateInfo", apiViews.update_Info),
+    path("getFriend/<str:username>", apiViews.get_friend),
+    path("sendMessage/<str:username>",apiViews.send_message)
+
 ]
 
 # "token": "532d33f021815898c4e7753a29842afa18792ecf"
