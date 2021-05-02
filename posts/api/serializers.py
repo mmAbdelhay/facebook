@@ -11,15 +11,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CommentsSerializer(serializers.ModelSerializer):
     UID = UserSerializer(read_only=True, many=False, required=False)
+
     class Meta:
         model = Comment
         # fields = "__all__"
         exclude = ('Time',)
-    def save(self,id):
-        self.data.UID = id
-        super(Comment, self).save(self.data)
-        print(UID)
-        # Comment.save(self.data)
+
+    def save(self, id):
+            comment = Comment(content=self.data['content'], UID=User.objects.get(pk=id), postID=Post.objects.get(pk=self.data['postID']))
+            comment.save()
 
 
 class LikesSerializer(serializers.ModelSerializer):
@@ -38,6 +38,10 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
+
+    def save(self, id):
+            post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
+            post.save()
 
     def delete(self):
         id = self.data.get('id')
