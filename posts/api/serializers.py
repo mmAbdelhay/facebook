@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from Users.models import *
 from django.contrib.auth.models import User
+from groups.models import Group
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -47,10 +48,10 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def save(self, id):
-            try :
-                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),group_ID=self.data['group_ID'])
+            if self.data['group_ID']:
+                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),group_ID=Group.objects.get(pk=self.data["group_ID"]))
                 post.save()
-            except :
+            else :
                 post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
                 post.save()
 
