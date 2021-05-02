@@ -79,8 +79,8 @@ class Like(models.Model):
 
 
 class Comment(models.Model):
-    class Meta:
-        unique_together = (('UID', 'postID', 'Time'),)
+    # class Meta:
+    #     unique_together = (('UID', 'postID', 'Time'),)
     UID = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name='commenter')
     postID = models.ForeignKey(
