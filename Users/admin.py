@@ -7,7 +7,7 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
 
 class FriendsAdmin(admin.ModelAdmin):
-    list_display = (['UID', 'FID'])
+    list_display = (['UID', 'FID', 'status'])
 
 
 class PostAdmin(admin.ModelAdmin):
