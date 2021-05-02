@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        fields = ('id','username')
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -47,8 +47,13 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def save(self, id):
-            post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
-            post.save()
+            try :
+                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),group_ID=self.data['group_ID'])
+                post.save()
+            except :
+                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
+                post.save()
+
 
     def delete(self):
         id = self.data.get('id')
