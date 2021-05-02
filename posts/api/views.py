@@ -26,9 +26,9 @@ def index2(request):
 @permission_classes([IsAuthenticated])
 def create(request):
     serializer = PostSerializer(data=request.data)
-
+    # print(request.user.id);
     if serializer.is_valid():
-        serializer.save(request.data.get('poster_ID'))
+        serializer.save(request.user.id)
         return Response(data={
             "success": True,
             "message": "post has been added successfully"
@@ -45,7 +45,7 @@ def addComment(request):
     serializer = CommentsSerializer(many=False, data=request.data)
 
     if serializer.is_valid():
-        serializer.save(request.data.get('UID'))
+        serializer.save(request.user.id)
         return Response(data={
             'message': 'comment added',
             'success': True
