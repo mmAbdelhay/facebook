@@ -26,7 +26,6 @@ SECRET_KEY = 'django-insecure-bhl0-k!bn!&x+&)g!xa+&**sa%v_f$a(09o@(+*993uz)n($ti
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 AUTH_PROFILE_MODULE = "User.Profile"
 # Application definition
 
