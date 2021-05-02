@@ -5,7 +5,8 @@ from rest_framework.response import Response
 
 from groups.models import Group,join
 from groups.api.serializers import GroupSerializer,JoinSerializer
-
+from Users.models import Post
+from posts.api.serializers import PostSerializer
 
 @api_view(['GET',])
 def view_all_groups(request):
@@ -22,7 +23,7 @@ def view_all_pending_user(request,gid):
 
 @api_view(['GET',])
 def view_all_user_groups(request,uid):
-    user_group_id = join.objects.filter(UID=uid).values_list('GID')
+    user_group_id = join.objects.filter(UID=uid).filter(status='accepted').values_list('GID') 
     user_groups = Group.objects.filter(id__in=user_group_id.all())
     serializer = GroupSerializer(instance=user_groups, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -94,3 +95,50 @@ def api_delete_group(request,gid):
     except join.DoesNotExist:
         data = {"success": False, "error": {"code": 404, "message": "record not found"}}
         return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(["GET"])
+def get_all_group_posts(request,gid):
+    allGroupPosts=Post.objects.filter(group_ID=gid).order_by('Time')
+    serializer = PostSerializer(instance=allGroupPosts,many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def join_group_request(request):    #takes only GID in body
+    updatedRequest=request.data.dict()
+    updatedRequest["UID"]=(request.user.id)
+    serializer = JoinSerializer(data=updatedRequest)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_201_CREATED)
+    return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["PUT"])
+def approve_join_request(request,uid):
+    updatedRequest=request.data.dict()
+    updatedRequest["UID"]=(uid)
+    updatedRequest["status"]="accepted"
+
+    oldJoin=join.objects.filter(UID=uid).get(GID=(updatedRequest["GID"]))
+
+    print(updatedRequest)
+    print(oldJoin)
+
+    serializers = JoinSerializer(oldJoin,updatedRequest)
+    if serializers.is_valid():
+        serializers.save()
+        return Response(serializers.data)
+    return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def get_posts_from_joined_groups(request,uid):
+    user_group_id = join.objects.filter(UID=uid).filter(status='accepted').values_list('GID')
+    print(user_group_id)
+    allJoinedGroupsPosts=Post.objects.filter(group_ID__in=user_group_id).order_by('Time')
+    print(allJoinedGroupsPosts)
+    serializer = PostSerializer(instance=allJoinedGroupsPosts,many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
