@@ -109,9 +109,14 @@ def update_Info(request):
 # add friend
 # reject add friend request
 # un friend
-# edit profile data except gender and date of birth
-# visit and show friends profile to see his data and its groups friends and posts and i can send him message or add request
-# send message to a friend
-# show  all friends messages
-# admin can deactivate user
+
+
+# Khaled
+# visit and show friends profile to see his data and its groups friends and posts and i can send him message or add request //Copy Paste
+# send message to a friend //Straight
 # i can reply on message
+
+
+# edit profile data except gender and date of birth //Done
+# show  all friends messages //Done
+# admin can deactivate user  ???????????????

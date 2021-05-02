@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from Users.models import Post,Comment,Like
+from Users.models import Post, Comment, Like
 from posts.api.serializers import *
 
 
@@ -13,6 +13,7 @@ def index(request):
     posts = Post.objects.all()
     serializer = PostSerializer(instance=posts, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -39,6 +40,7 @@ def create(request):
         "errors": serializer.errors
     }, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def addComment(request):
@@ -54,6 +56,7 @@ def addComment(request):
         'Error': serializer.errors,
         'success': False
     }, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -74,21 +77,27 @@ def like(request):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def unlike(request, id):
-    like = Like.objects.get(PID=id)
-    serializer = LikesSerializer(instance=like, many=False)
-    if request.user.id == like.UID.id:
-        serializer.unlike(like)
+    # print(like)
+    try:
+        like = Like.objects.get(UID=request.user.id, PID=id)
+        print(like)
+        serializer = LikesSerializer(instance=like, many=False)
+        if request.user.id == like.UID.id:
+            serializer.unlike(like)
+            return Response(data={
+                'message': 'unliked',
+                'success': True
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                'Error': 'not owner',
+                'success': False
+            }, status=status.HTTP_400_BAD_REQUEST)
+    except:
         return Response(data={
-            'message': 'unliked',
-            'success': True
-        }, status=status.HTTP_200_OK)
-    else :
-        return Response(data={
-            'Error': 'not owner',
+            'Error': 'not liked',
             'success': False
         }, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 @api_view(['DELETE'])
@@ -102,12 +111,11 @@ def delete(request, id):
             'message': 'deleted',
             'success': True
         }, status=status.HTTP_200_OK)
-    else :
+    else:
         return Response(data={
             'Error': 'not owner',
             'success': False
         }, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(['PUT'])
@@ -117,12 +125,12 @@ def update(request, id):
     serializer = PostSerializer(instance=post, many=False, data=request.data)
     if serializer.is_valid():
         if request.user.id == post.poster_ID.id:
-            serializer.update(request.data['content'],post)
+            serializer.update(request.data['content'], post)
             return Response(data={
                 'message': 'post updated',
                 'success': True
             }, status=status.HTTP_201_CREATED)
-        else :
+        else:
             return Response(data={
                 'Error': 'not owner',
                 'success': False
