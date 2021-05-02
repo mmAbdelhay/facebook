@@ -104,3 +104,14 @@ def update_Info(request):
         return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_404_NOT_FOUND)
     except Exception:
         return JsonResponse({'error': 'Something terrible went wrong'}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# add friend
+# reject add friend request
+# un friend
+# edit profile data except gender and date of birth
+# visit and show friends profile to see his data and its groups friends and posts and i can send him message or add request
+# send message to a friend
+# show  all friends messages
+# admin can deactivate user
+# i can reply on message
