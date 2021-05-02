@@ -9,12 +9,14 @@ from Users.models import Post
 from posts.api.serializers import PostSerializer
 
 @api_view(['GET',])
+@permission_classes((IsAuthenticated,))
 def view_all_groups(request):
     groups = Group.objects.all()
     serializer = GroupSerializer(instance=groups, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET',])
+@permission_classes((IsAuthenticated,))
 def view_all_pending_user(request,gid):
     pending = join.objects.filter(GID=gid,status='pending')
     serializer = JoinSerializer(instance=pending, many=True)
@@ -22,6 +24,7 @@ def view_all_pending_user(request,gid):
 
 
 @api_view(['GET',])
+@permission_classes((IsAuthenticated,))
 def view_all_user_groups(request,uid):
     user_group_id = join.objects.filter(UID=uid).filter(status='accepted').values_list('GID') 
     user_groups = Group.objects.filter(id__in=user_group_id.all())
@@ -30,6 +33,7 @@ def view_all_user_groups(request,uid):
 
 
 @api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def show(request, id):
     one_group = Group.objects.get(pk=id)
     serializer = GroupSerializer(instance=one_group)
@@ -39,13 +43,11 @@ def show(request, id):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create(request):
-    serializer = GroupSerializer(data=request.data)
-
+    updatedRequest=request.data
+    updatedRequest["created_by"]=request.user.id
+    serializer = GroupSerializer(data=updatedRequest)
     if serializer.is_valid():
-        group= serializer.save()
-        print(type(request.user))
-        group.created_by = request.user
-        group.save()
+        serializer.save()
         return Response(data={
             "success": True,
             "message": "group has been added successfully"
@@ -98,6 +100,7 @@ def api_delete_group(request,gid):
 
 
 @api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def get_all_group_posts(request,gid):
     allGroupPosts=Post.objects.filter(group_ID=gid).order_by('Time')
     serializer = PostSerializer(instance=allGroupPosts,many=True)
@@ -117,6 +120,7 @@ def join_group_request(request):    #takes only GID in body
 
 
 @api_view(["PUT"])
+@permission_classes((IsAuthenticated,))
 def approve_join_request(request,uid):
     updatedRequest=request.data.dict()
     updatedRequest["UID"]=(uid)
@@ -135,6 +139,7 @@ def approve_join_request(request,uid):
 
 
 @api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def get_posts_from_joined_groups(request,uid):
     user_group_id = join.objects.filter(UID=uid).filter(status='accepted').values_list('GID')
     print(user_group_id)
