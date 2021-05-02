@@ -29,6 +29,13 @@ class LikesSerializer(serializers.ModelSerializer):
         model = Like
         fields = "__all__"
 
+    def save(self, id):
+            like = Like(UID=User.objects.get(pk=id), PID=Post.objects.get(pk=self.data['PID']))
+            like.save()
+
+    def unlike(self,like):
+        like.delete()
+
 
 class PostSerializer(serializers.ModelSerializer):
     post = CommentsSerializer(read_only=True, many=True)
@@ -47,3 +54,7 @@ class PostSerializer(serializers.ModelSerializer):
         id = self.data.get('id')
         post = Post.objects.get(pk=id)
         post.delete()
+
+    def update(self,content,post):
+            post.content=content
+            post.save()

@@ -23,7 +23,7 @@ class JoinAdmin(admin.ModelAdmin):
 
 
 class LikeAdmin(admin.ModelAdmin):
-    list_display = (['UID', 'PID'])
+    list_display = (['UID', 'PID','pk'])
 
 
 class CommentAdmin(admin.ModelAdmin):
