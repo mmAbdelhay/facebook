@@ -34,7 +34,7 @@ class Post(models.Model):
     Time = models.DateField(auto_now_add=True)
     postImg = models.ImageField(blank=True, null=True)
     group_ID = models.ForeignKey(
-        Group, blank=True, on_delete=models.DO_NOTHING, null=True)
+        Group, blank=True, on_delete=models.CASCADE, null=True)
 
 
 class Message(models.Model):

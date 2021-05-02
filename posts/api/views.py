@@ -26,6 +26,7 @@ def index2(request):
 @permission_classes([IsAuthenticated])
 def create(request):
     serializer = PostSerializer(data=request.data)
+
     if serializer.is_valid():
         serializer.save()
         return Response(data={
