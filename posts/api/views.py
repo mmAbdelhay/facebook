@@ -116,7 +116,7 @@ def update(request, id):
     post = Post.objects.get(pk=id)
     serializer = PostSerializer(instance=post, many=False, data=request.data)
     if serializer.is_valid():
-        if request.user.id == post.poster_ID:
+        if request.user.id == post.poster_ID.id:
             serializer.update(request.data['content'],post)
             return Response(data={
                 'message': 'post updated',
