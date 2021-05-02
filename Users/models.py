@@ -21,7 +21,8 @@ class Profile(models.Model):
         choices=Gender,
         default=MALE,
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='profile')
     birth_date = models.DateField(null=True, blank=True)
     profileImg = models.ImageField()
 
@@ -34,7 +35,7 @@ class Post(models.Model):
     Time = models.DateField(auto_now_add=True)
     postImg = models.ImageField(blank=True, null=True)
     group_ID = models.ForeignKey(
-        Group, blank=True, on_delete=models.DO_NOTHING, null=True)
+        Group, blank=True, on_delete=models.CASCADE, null=True)
 
 
 class Message(models.Model):
@@ -44,7 +45,7 @@ class Message(models.Model):
         User, on_delete=models.DO_NOTHING, related_name='sender')
     receiverID = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name='receiver')
-    Time = models.DateField(auto_now_add=True)
+    Time = models.DateTimeField(auto_now_add=True)
     content = models.TextField(max_length=1024)
 
 
@@ -55,6 +56,17 @@ class Friends(models.Model):
                             related_name='main_User')
     FID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
                             related_name='friend')
+
+    Pending = 'Pending'
+    Accepted = 'Friends'
+    Status = (
+        (Pending, 'Pending'),
+        (Accepted, 'Friends'),
+    )
+    status = models.CharField(
+        max_length=15,
+        choices=Status
+    )
 
 
 class Like(models.Model):
@@ -75,4 +87,3 @@ class Comment(models.Model):
         Post, on_delete=models.DO_NOTHING, related_name='post')
     Time = models.DateField(auto_now_add=True)
     content = models.TextField(max_length=1024)
-
