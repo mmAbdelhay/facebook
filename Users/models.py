@@ -74,7 +74,7 @@ class Like(models.Model):
         unique_together = (('UID', 'PID'),)
     UID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
                             related_name='likerID')
-    PID = models.ForeignKey(Post, on_delete=models.DO_NOTHING,
+    PID = models.ForeignKey(Post, on_delete=models.CASCADE,
                             related_name='liked_post')
 
 
@@ -84,6 +84,6 @@ class Comment(models.Model):
     UID = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name='commenter')
     postID = models.ForeignKey(
-        Post, on_delete=models.DO_NOTHING, related_name='post')
+        Post, on_delete=models.CASCADE, related_name='post')
     Time = models.DateField(auto_now_add=True)
     content = models.TextField(max_length=1024)
