@@ -1,12 +1,53 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.response import Response
 
 from groups.models import Group,join
 from groups.api.serializers import GroupSerializer,JoinSerializer
 from Users.models import Post
 from posts.api.serializers import PostSerializer
+
+class IsGroupCreator(BasePermission):
+    def has_permission(self, request, view):
+        userId = request.user.id
+        urlSplit= request.path.split("/")
+        gid= int(urlSplit[len(urlSplit)-1])
+        gp=Group.objects.get(id=gid)
+        creatorId=gp.created_by.id
+        is_creator=(userId == creatorId)
+        return is_creator
+
+class IsGroupCreatorV2(BasePermission):
+    def has_permission(self, request, view):
+        userId = request.user.id
+        gid= int(request.data["GID"])
+        gp=Group.objects.get(id=gid)
+        creatorId=gp.created_by.id
+        is_creator=(userId == creatorId)
+        return is_creator
+
+class IsGroupCreatorV3(BasePermission):
+    def has_permission(self, request, view):
+        userId = request.user.id
+        gid= int(request.query_params.get('gid', None))
+        print(gid)
+        gp=Group.objects.get(id=gid)
+        creatorId=gp.created_by.id
+        is_creator=(userId == creatorId)
+        return is_creator
+
+class IsMember(BasePermission):
+    def has_permission(self, request, view):
+        userId = request.user.id
+        urlSplit= request.path.split("/")
+        gid= int(urlSplit[len(urlSplit)-1])
+        gpMembers=join.objects.filter(GID=gid).filter(status='accepted').values_list('UID') 
+        gpMembersList=list(gpMembers)
+        if userId in gpMembersList[0]:
+            print("in if")
+            return True
+        return False
 
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
@@ -16,7 +57,7 @@ def view_all_groups(request):
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET',])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,IsGroupCreator))
 def view_all_pending_user(request,gid):
     pending = join.objects.filter(GID=gid,status='pending')
     serializer = JoinSerializer(instance=pending, many=True)
@@ -60,7 +101,7 @@ def create(request):
 
 
 @api_view(['DELETE', ])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,IsGroupCreatorV3))
 def api_delete_user_from_group(request):
     uid = request.query_params.get('uid', None)
     gid = request.query_params.get('gid', None)
@@ -83,7 +124,7 @@ def api_delete_user_from_group(request):
 
 
 @api_view(['DELETE', ])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,IsGroupCreator))
 def api_delete_group(request,gid):
 
     try:
@@ -100,8 +141,8 @@ def api_delete_group(request,gid):
 
 
 @api_view(["GET"])
-@permission_classes((IsAuthenticated,))
-def get_all_group_posts(request,gid):
+@permission_classes((IsAuthenticated))
+def get_all_group_posts(request,gid):    ######################## member
     allGroupPosts=Post.objects.filter(group_ID=gid).order_by('Time')
     serializer = PostSerializer(instance=allGroupPosts,many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -120,7 +161,7 @@ def join_group_request(request):    #takes only GID in body
 
 
 @api_view(["PUT"])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,IsGroupCreatorV2))
 def approve_join_request(request,uid):
     updatedRequest=request.data.dict()
     updatedRequest["UID"]=(uid)
