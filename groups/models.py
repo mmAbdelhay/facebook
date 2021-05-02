@@ -31,6 +31,8 @@ class join(models.Model):
         max_length=100,
         choices=joining_status,
         default=pending,
+        blank=True,
+        null=True
     )
 
 
