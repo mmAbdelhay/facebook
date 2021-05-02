@@ -21,7 +21,8 @@ class Profile(models.Model):
         choices=Gender,
         default=MALE,
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='profile')
     birth_date = models.DateField(null=True, blank=True)
     profileImg = models.ImageField()
 
@@ -56,13 +57,24 @@ class Friends(models.Model):
     FID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
                             related_name='friend')
 
+    Pending = 'Pending'
+    Accepted = 'Friends'
+    Status = (
+        (Pending, 'Pending'),
+        (Accepted, 'Friends'),
+    )
+    status = models.CharField(
+        max_length=15,
+        choices=Status
+    )
+
 
 class Like(models.Model):
     class Meta:
         unique_together = (('UID', 'PID'),)
     UID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
                             related_name='likerID')
-    PID = models.ForeignKey(Post, on_delete=models.DO_NOTHING,
+    PID = models.ForeignKey(Post, on_delete=models.CASCADE,
                             related_name='liked_post')
 
 
@@ -72,6 +84,6 @@ class Comment(models.Model):
     UID = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name='commenter')
     postID = models.ForeignKey(
-        Post, on_delete=models.DO_NOTHING, related_name='post')
+        Post, on_delete=models.CASCADE, related_name='post')
     Time = models.DateField(auto_now_add=True)
     content = models.TextField(max_length=1024)

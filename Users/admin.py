@@ -7,7 +7,7 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
 
 class FriendsAdmin(admin.ModelAdmin):
-    list_display = (['UID', 'FID'])
+    list_display = (['UID', 'FID', 'status'])
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -23,7 +23,7 @@ class JoinAdmin(admin.ModelAdmin):
 
 
 class LikeAdmin(admin.ModelAdmin):
-    list_display = (['UID', 'PID'])
+    list_display = (['UID', 'PID','pk'])
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -50,4 +50,5 @@ admin.site.register(Message, MessageAdmin)
 admin.site.register(Friends, FriendsAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.unregister(User)
+admin.site.register(Comment,CommentAdmin)
 admin.site.register(User, UserAdmin)
