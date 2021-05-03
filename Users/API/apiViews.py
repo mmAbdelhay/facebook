@@ -125,6 +125,14 @@ def get_friend(request, username):
     responeDictionary['birth_date'] = user.profile.birth_date
     responeDictionary['profileImg'] = str(user.profile.profileImg)
     responeDictionary['friends'] = friendSerializer.data
+    for x in friendSerializer.data:
+        if request.user.username == x['FriendName']:
+            friends_status = x['status']
+            break
+        else:
+            friends_status = 'not friends'
+
+    responeDictionary['friends_status'] = friends_status
     responeDictionary['posts'] = postsSerializer.data
     responeDictionary['createdGroups'] = createdGroupsSerializer.data
     responeDictionary['groups'] = groupsSerializer.data

@@ -10,7 +10,7 @@ urlpatterns = [
     path("getConversation/<str:username>", apiViews.get_conversation),
     path("getUser", apiViews.get_user),
     path("updateInfo", apiViews.update_Info),
-    path("getFriend/<str:username>", apiViews.get_friend),
+    path("getUser/<str:username>", apiViews.get_friend),
     path("sendMessage/<str:username>", apiViews.send_message),
 
     path("addRequest/<str:username>", apiViews.add_request),
