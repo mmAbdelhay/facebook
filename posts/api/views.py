@@ -13,28 +13,46 @@ from posts.api.serializers import *
 def index(request):
     try:
         friends = Friends.objects.get(UID=request.user.id)
+        print('try2')
     except:
         friends = None
-    try:
-        groups = join.objects.filter(UID=request.user.id).filter(joining_status='accepted')
-    except:
-        groups = None
+        print('except1')
+    # try:
+        groups = join.objects.filter(UID=request.user.id).filter(status='accepted')
+        print('try2')
+    # except:
+    #     groups = None
+    #     print('except2')
     if friends != None:
         if groups != None:
+            print('1')
             posts = Post.objects.filter(
                 Q(poster_ID=request.user.id) | Q(poster_ID__in=friends.FID) | Q(group_ID__in=groups.GID))
     if friends is None:
         if groups != None:
+            print('2')
+            # print(groups.GID)
             posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(group_ID__in=groups.GID))
     if groups is None:
         if friends != None:
+            print('3')
             posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(poster_ID__in=friends.FID))
     if friends is None:
         if groups is None:
+            print('4')
             posts = Post.objects.filter(poster_ID=request.user.id)
 
     serializer = PostSerializer(instance=posts, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getMyPosts(request):
+    posts = Post.objects.filter(poster_ID=request.user.id)
+    serializer = PostSerializer(instance=posts, many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
 
 @api_view(["GET"])

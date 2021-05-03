@@ -5,6 +5,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path("", views.index),
+    path("myPosts", views.getMyPosts),
     path("comments", views.index2),
     path('create', views.create),
     path('addComment', views.addComment),
