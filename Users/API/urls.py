@@ -9,15 +9,12 @@ urlpatterns = [
     path("getConversation/<str:username>", apiViews.get_conversation),
     path("getUser", apiViews.get_user),
     path("updateInfo", apiViews.update_Info),
-<<<<<<< HEAD
     path("getFriend/<str:username>", apiViews.get_friend),
-    path("sendMessage/<str:username>",apiViews.send_message)
-=======
+    path("sendMessage/<str:username>", apiViews.send_message),
     path("addRequest/<str:username>", apiViews.add_request),
     path("ListRequests", apiViews.list_request),
     path("rejectRequest", apiViews.reject_delete_request),
     path("acceptRequest", apiViews.accept_request)
->>>>>>> 450cf2352289aa13bc55232fd071aaf6260bae5f
 
 ]
 
