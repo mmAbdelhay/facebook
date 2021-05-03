@@ -42,7 +42,7 @@ class JoinedGroupsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = join
-        fields = ['GroupName', 'status']
+        fields = ['GroupName', 'status', 'GID']
 
 
 class FriendsSerializer(serializers.ModelSerializer):
@@ -56,4 +56,4 @@ class FriendsSerializer(serializers.ModelSerializer):
 class CreatedGroupsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ['created_at', 'overview', 'name']
+        fields = ['created_at', 'overview', 'name','id']

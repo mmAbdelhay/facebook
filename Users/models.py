@@ -24,7 +24,8 @@ class Profile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
     birth_date = models.DateField(null=True, blank=True)
-    profileImg = models.ImageField()
+    #profileImg = models.ImageField()
+    profileImg = models.ImageField(upload_to='images/')
 
 
 class Post(models.Model):
