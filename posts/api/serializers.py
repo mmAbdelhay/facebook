@@ -22,6 +22,12 @@ class CommentsSerializer(serializers.ModelSerializer):
             comment = Comment(content=self.data['content'], UID=User.objects.get(pk=id), postID=Post.objects.get(pk=self.data['postID']))
             comment.save()
 
+    def delete(self):
+        id = self.data.get('id')
+        comment = Comment.objects.get(pk=id)
+        comment.delete()
+
+
 
 class LikesSerializer(serializers.ModelSerializer):
     UID = UserSerializer(read_only=True, many=False)

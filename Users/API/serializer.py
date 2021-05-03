@@ -26,12 +26,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='receiverID', read_only=True)
+
     class Meta:
         model = Message
-        fields = ['receiverID', 'Time', 'content']
+        fields = ['name', 'Time', 'content']
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['content', 'Time', 'postImg', 'group_ID']
@@ -42,7 +44,7 @@ class JoinedGroupsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = join
-        fields = ['GroupName', 'status']
+        fields = ['GroupName', 'status', 'GID']
 
 
 class FriendsSerializer(serializers.ModelSerializer):
@@ -56,4 +58,4 @@ class FriendsSerializer(serializers.ModelSerializer):
 class CreatedGroupsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ['created_at', 'overview', 'name']
+        fields = ['created_at', 'overview', 'name', 'id']

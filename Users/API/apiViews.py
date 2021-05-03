@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from Users.API.serializer import UserSerializer, MessageSerializer, PostSerializer, JoinedGroupsSerializer, CreatedGroupsSerializer, FriendsSerializer
+from Users.API.serializer import UserSerializer, MessageSerializer, PostUsersSerializer, JoinedGroupsSerializer, CreatedGroupsSerializer, FriendsSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -9,8 +9,10 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from Users.models import Message
 from Users.models import Profile
-from Users.models import Post, Friends,Message
+from Users.models import Post, Friends, Message
 import json
+from django.db.models import Q
+from posts.api.serializers import *
 from groups.models import join, Group
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -80,9 +82,6 @@ def get_user(request):
     return JsonResponse({'data': responeDictionary}, safe=False, status=status.HTTP_200_OK)
 
 
-
-
-
 @api_view(["POST"])
 @csrf_exempt
 @permission_classes([IsAuthenticated])
@@ -94,17 +93,14 @@ def send_message(request, username):
     print(request.user.username)
     print(receiver.username)
 
-
     message = Message.objects.create(
-        senderID = request.user,
-        receiverID = receiver,
-        content = payload["message"]
+        senderID=request.user,
+        receiverID=receiver,
+        content=payload["message"]
     )
     print(message)
     serializer = MessageSerializer(message)
     return JsonResponse({'message': serializer.data}, safe=False, status=status.HTTP_201_CREATED)
-
-
 
 
 @api_view(["GET"])
@@ -136,24 +132,28 @@ def get_friend(request, username):
     return JsonResponse({'data': responeDictionary}, safe=False, status=status.HTTP_200_OK)
 
 
-
-
-
-
-
-
-
 @api_view(["GET"])
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def get_conversation(request, username):
     # print(username)
     user = User.objects.get(username=username)
-    messages = Message.objects.filter(
+    recievedMessages = Message.objects.filter(
         senderID=request.user.id, receiverID=user.id)
-    serializer = MessageSerializer(messages, many=True)
-    # print(serializer.data)
-    return JsonResponse({'Messages': serializer.data}, safe=False, status=status.HTTP_200_OK)
+    sentMessages = Message.objects.filter(
+        senderID=user.id, receiverID=request.user.id)
+
+    receiverID = request.user.id
+    criterion1 = Q(senderID=request.user.id)
+    criterion2 = Q(receiverID=user.id)
+    criterion3 = Q(receiverID=request.user.id)
+    criterion4 = Q(senderID=user.id)
+    Messages = Message.objects.filter(
+        criterion1 & criterion2 | criterion3 & criterion4).order_by('Time')
+
+    Aserializer = MessageSerializer(Messages, many=True)
+    # print(Aserializer.data)
+    return JsonResponse({'Messages': Aserializer.data}, safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(["PUT"])

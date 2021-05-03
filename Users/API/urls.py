@@ -2,6 +2,7 @@ from django.urls import path
 from . import apiViews
 from rest_framework.authtoken.views import obtain_auth_token
 
+
 urlpatterns = [
     path("login", obtain_auth_token),
     path("signup", apiViews.api_signup),
@@ -11,10 +12,12 @@ urlpatterns = [
     path("updateInfo", apiViews.update_Info),
     path("getFriend/<str:username>", apiViews.get_friend),
     path("sendMessage/<str:username>", apiViews.send_message),
+
     path("addRequest/<str:username>", apiViews.add_request),
     path("ListRequests", apiViews.list_request),
     path("rejectRequest", apiViews.reject_delete_request),
-    path("acceptRequest", apiViews.accept_request)
+    path("acceptRequest", apiViews.accept_request),
+
 
 ]
 
