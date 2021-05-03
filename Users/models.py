@@ -10,6 +10,7 @@ from groups.models import Group
 class Profile(models.Model):
     def __str__(self):
         return str(self.user)
+
     MALE = 'M'
     FEMALE = 'F'
     Gender = (
@@ -24,13 +25,14 @@ class Profile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
     birth_date = models.DateField(null=True, blank=True)
-    #profileImg = models.ImageField()
-    profileImg = models.ImageField(upload_to='images/')
+    # profileImg = models.ImageField()
+    profileImg = models.ImageField(upload_to='images/', null=True, blank=True)
 
 
 class Post(models.Model):
     def __str__(self):
         return str(self.content)
+
     poster_ID = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     content = models.TextField(max_length=1024)
     Time = models.DateField(auto_now_add=True)
@@ -42,6 +44,7 @@ class Post(models.Model):
 class Message(models.Model):
     class Meta:
         unique_together = (('senderID', 'receiverID', 'Time'),)
+
     senderID = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name='sender')
     receiverID = models.ForeignKey(
@@ -53,6 +56,7 @@ class Message(models.Model):
 class Friends(models.Model):
     class Meta:
         unique_together = (('UID', 'FID'),)
+
     UID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
                             related_name='main_User')
     FID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
@@ -73,6 +77,7 @@ class Friends(models.Model):
 class Like(models.Model):
     class Meta:
         unique_together = (('UID', 'PID'),)
+
     UID = models.ForeignKey(User, on_delete=models.DO_NOTHING,
                             related_name='likerID')
     PID = models.ForeignKey(Post, on_delete=models.CASCADE,
