@@ -55,11 +55,21 @@ class PostSerializer(serializers.ModelSerializer):
 
     def save(self, id):
             if self.data['group_ID']:
-                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),group_ID=Group.objects.get(pk=self.data["group_ID"]))
-                post.save()
+                try:
+                 post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),group_ID=Group.objects.get(pk=self.data["group_ID"]),postImg=self.data['postImg'])
+                 post.save()
+                except:
+                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                                group_ID=Group.objects.get(pk=self.data["group_ID"]))
+
+                    post.save()
             else :
-                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
-                post.save()
+                try:
+                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),postImg=self.data['postImg'])
+                    post.save()
+                except:
+                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
+                    post.save()
 
 
     def delete(self):
