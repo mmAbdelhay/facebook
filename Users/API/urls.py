@@ -3,8 +3,6 @@ from . import apiViews
 from rest_framework.authtoken.views import obtain_auth_token
 
 
-
-
 urlpatterns = [
     path("login", obtain_auth_token),
     path("signup", apiViews.api_signup),
@@ -12,9 +10,8 @@ urlpatterns = [
     path("getConversation/<str:username>", apiViews.get_conversation),
     path("getUser", apiViews.get_user),
     path("updateInfo", apiViews.update_Info),
-
     path("getFriend/<str:username>", apiViews.get_friend),
-    path("sendMessage/<str:username>",apiViews.send_message),
+    path("sendMessage/<str:username>", apiViews.send_message),
 
     path("addRequest/<str:username>", apiViews.add_request),
     path("ListRequests", apiViews.list_request),

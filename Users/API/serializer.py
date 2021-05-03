@@ -56,12 +56,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='receiverID', read_only=True)
+
     class Meta:
         model = Message
-        fields = ['receiverID', 'Time', 'content']
+        fields = ['name', 'Time', 'content']
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['content', 'Time', 'postImg', 'group_ID']
