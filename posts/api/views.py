@@ -12,35 +12,65 @@ from posts.api.serializers import *
 @permission_classes([IsAuthenticated])
 def index(request):
     try:
-        friends = Friends.objects.get(UID=request.user.id)
-        print('try2')
-    except:
-        friends = None
-        print('except1')
-    # try:
+        friends = Friends.objects.filter(UID=request.user.id)
         groups = join.objects.filter(UID=request.user.id).filter(status='accepted')
-        print('try2')
-    # except:
-    #     groups = None
-    #     print('except2')
-    if friends != None:
-        if groups != None:
+        print('try1')
+    except:
+        try:
+
+            friends = Friends.objects.get(UID=request.user.id)
+            print('try2')
+        except:
+            friends = None
+        try:
+
+            groups = join.objects.filter(UID=request.user.id).filter(status='accepted')
+            print('try3')
+        except:
+            groups = None
+
+    try:
             print('1')
+            g= []
+            f= []
+            print('===')
+            for items in friends.iterator():
+                f.append(items.FID)
+                print(items.FID)
+                print('===')
+
+            for item in groups.iterator():
+                g.append(item.GID)
+                print(item.GID)
+
             posts = Post.objects.filter(
-                Q(poster_ID=request.user.id) | Q(poster_ID__in=friends.FID) | Q(group_ID__in=groups.GID))
-    if friends is None:
-        if groups != None:
+                Q(poster_ID=request.user.id) | Q(poster_ID__in=f) | Q(group_ID__in=g))
+    except:
+        try:
             print('2')
-            # print(groups.GID)
-            posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(group_ID__in=groups.GID))
-    if groups is None:
-        if friends != None:
-            print('3')
-            posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(poster_ID__in=friends.FID))
-    if friends is None:
-        if groups is None:
-            print('4')
-            posts = Post.objects.filter(poster_ID=request.user.id)
+            g = []
+            for item in groups.iterator():
+                g.append(item.GID)
+                print(item.GID)
+
+            posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(group_ID__in=g))
+            # for item in groups:
+            #     print(item.GID.id)
+            #     print(Post.objects.filter(group_ID=item.GID))
+            # posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(group_ID__in=groups.GID))
+        except:
+            try:
+                print('3')
+                posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(poster_ID__in=friends.FID))
+            except:
+                try:
+                    print('4')
+                    posts = Post.objects.filter(poster_ID=request.user.id)
+                except:
+                    return Response(data={
+                        "success": True,
+                        "message": "Error in loading data"
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = PostSerializer(instance=posts, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
