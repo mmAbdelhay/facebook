@@ -25,6 +25,36 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
 
+class ProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True, many=False, required=False)
+
+    class Meta:
+        model = Profile
+        fields = "__all__"
+
+    def save(self, request):
+        print(request.data)
+        print(self.validated_data)
+        userData = User(
+            email=request.data.get('email'),
+            username=request.data.get('username')
+        )
+        if request.data.get('password') != request.data.get('password2'):
+            raise serializers.ValidationError({
+                'password': 'passwords doesnt match'
+            })
+        else:
+            userData.set_password(request.data.get('password'))
+            userData.save()
+            profile = Profile(
+                gender=self.validated_data.get('gender'),
+                birth_date=self.validated_data.get('birth_date'),
+                user=userData,
+                profileImg=self.validated_data.get('profileImg')
+            )
+            profile.save()
+
+
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
@@ -56,4 +86,4 @@ class FriendsSerializer(serializers.ModelSerializer):
 class CreatedGroupsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ['created_at', 'overview', 'name','id']
+        fields = ['created_at', 'overview', 'name', 'id']

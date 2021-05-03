@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from Users.API.serializer import UserSerializer, MessageSerializer, PostSerializer, JoinedGroupsSerializer, CreatedGroupsSerializer, FriendsSerializer
+from Users.API.serializer import *
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -17,9 +17,9 @@ from django.core.exceptions import ObjectDoesNotExist
 
 @api_view(["POST"])
 def api_signup(request):
-    serializer = UserSerializer(data=request.data)
+    serializer = ProfileSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        serializer.save(request)
         return Response(data={
             "success": True,
             "message": "user has been registered successfully"
