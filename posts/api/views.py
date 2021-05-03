@@ -99,7 +99,7 @@ def create(request):
     serializer = PostSerializer(data=request.data)
     # print(request.user.id);
     if serializer.is_valid():
-        serializer.save(request.user.id)
+        serializer.save(request.user.id, request)
         return Response(data={
             "success": True,
             "message": "post has been added successfully"

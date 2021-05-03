@@ -7,7 +7,7 @@ from groups.models import Group
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id','username')
+        fields = ('id', 'username')
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -19,14 +19,14 @@ class CommentsSerializer(serializers.ModelSerializer):
         exclude = ('Time',)
 
     def save(self, id):
-            comment = Comment(content=self.data['content'], UID=User.objects.get(pk=id), postID=Post.objects.get(pk=self.data['postID']))
-            comment.save()
+        comment = Comment(content=self.data['content'], UID=User.objects.get(pk=id),
+                          postID=Post.objects.get(pk=self.data['postID']))
+        comment.save()
 
     def delete(self):
         id = self.data.get('id')
         comment = Comment.objects.get(pk=id)
         comment.delete()
-
 
 
 class LikesSerializer(serializers.ModelSerializer):
@@ -37,10 +37,10 @@ class LikesSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def save(self, id):
-            like = Like(UID=User.objects.get(pk=id), PID=Post.objects.get(pk=self.data['PID']))
-            like.save()
+        like = Like(UID=User.objects.get(pk=id), PID=Post.objects.get(pk=self.data['PID']))
+        like.save()
 
-    def unlike(self,like):
+    def unlike(self, like):
         like.delete()
 
 
@@ -53,20 +53,31 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
 
-    def save(self, id):
-            if self.data['group_ID']:
-                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),group_ID=Group.objects.get(pk=self.data["group_ID"]))
+    def save(self, id, request):
+        if self.data['group_ID']:
+            try:
+                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                            group_ID=Group.objects.get(pk=self.data["group_ID"]), postImg=request.data['postImg'])
                 post.save()
-            else :
+            except:
+                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                            group_ID=Group.objects.get(pk=self.data["group_ID"]))
+
+                post.save()
+        else:
+            try:
+                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                            postImg=request.data['postImg'])
+                post.save()
+            except:
                 post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
                 post.save()
-
 
     def delete(self):
         id = self.data.get('id')
         post = Post.objects.get(pk=id)
         post.delete()
 
-    def update(self,content,post):
-            post.content=content
-            post.save()
+    def update(self, content, post):
+        post.content = content
+        post.save()
