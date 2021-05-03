@@ -89,6 +89,14 @@ def create(request):
     serializer = GroupSerializer(data=updatedRequest)
     if serializer.is_valid():
         serializer.save()
+        CreatorUser={
+            "UID":request.user.id,
+            "GID":serializer.data['id'],
+            "status":"accepted"
+        }
+        serializer2 = JoinSerializer(data=CreatorUser)
+        if serializer2.is_valid():
+            serializer2.save()
         return Response(data={
             "success": True,
             "message": "group has been added successfully"
