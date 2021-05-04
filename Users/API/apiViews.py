@@ -64,7 +64,7 @@ def get_user(request):
     groupsSerializer = JoinedGroupsSerializer(groups, many=True)
 
     friends = Friends.objects.filter(
-        UID=request.user.id, status="Friends")
+        FID=request.user.id, status="Friends")
 
     friendSerializer = FriendsSerializer(friends, many=True)
 
@@ -114,25 +114,42 @@ def get_friend(request, username):
     postsSerializer = PostSerializer(posts, many=True)
     createdGroupsSerializer = CreatedGroupsSerializer(createdGroups, many=True)
     groupsSerializer = JoinedGroupsSerializer(groups, many=True)
-
     friends = Friends.objects.filter(UID=user.id)
     friendSerializer = FriendsSerializer(friends, many=True)
-
+    criterion1 = Q(UID=request.user.id)
+    criterion2 = Q(FID=user.id)
+    criterion3 = Q(FID=request.user.id)
+    criterion4 = Q(UID=user.id)
+    areTheyFriends = Friends.objects.filter(
+        criterion1 & criterion2 | criterion3 & criterion4).count()
     responeDictionary = {}
+
+    if areTheyFriends == 0:
+        responeDictionary['friends'] = "Strangers"
+    elif areTheyFriends == 2:
+        responeDictionary['friends'] = "Friends"
+    else:
+        areTheyFriends = Friends.objects.filter(
+            criterion1 & criterion2).count()
+        if areTheyFriends == 1:
+            responeDictionary['friends'] = "Sent"
+        else:
+            responeDictionary['friends'] = "Pending"
+
     responeDictionary['username'] = user.username
     responeDictionary['email'] = user.email
     responeDictionary['gender'] = user.profile.gender
     responeDictionary['birth_date'] = user.profile.birth_date
     responeDictionary['profileImg'] = str(user.profile.profileImg)
-    responeDictionary['friends'] = friendSerializer.data
-    for x in friendSerializer.data:
-        if request.user.username == x['FriendName']:
-            friends_status = x['status']
-            break
-        else:
-            friends_status = 'not friends'
+    # responeDictionary['friends'] = friendSerializer.data
+    # for x in friendSerializer.data:
+    #     if request.user.username == x['FriendName']:
+    #         friends_status = x['status']
+    #         break
+    #     else:
+    #         friends_status = 'not friends'
 
-    responeDictionary['friends_status'] = friends_status
+    # responeDictionary['friends_status'] = friends_status
     responeDictionary['posts'] = postsSerializer.data
     responeDictionary['createdGroups'] = createdGroupsSerializer.data
     responeDictionary['groups'] = groupsSerializer.data
@@ -196,7 +213,7 @@ def add_request(request, username):
 @permission_classes([IsAuthenticated])
 def list_request(request):
     friends = Friends.objects.filter(
-        UID=request.user.id, status="Pending")
+        FID=request.user.id, status="Pending")
     friendSerializer = FriendsSerializer(friends, many=True)
 
     return JsonResponse({'data': friendSerializer.data}, safe=False, status=status.HTTP_200_OK)
@@ -209,8 +226,14 @@ def reject_delete_request(request):
     username = request.data["friend"]
     friend = User.objects.get(username=username)
     user = User.objects.get(id=request.user.id)
-    FriendInstance = Friends.objects.get(UID=user, FID=friend)
-    FriendInstance.delete()
+    # FriendInstance = Friends.objects.get(UID=user, FID=friend)
+    if Friends.objects.filter(UID=user, FID=friend).exists():
+        FriendInstance = Friends.objects.get(UID=user, FID=friend)
+        FriendInstance.delete()
+    if Friends.objects.filter(UID=friend, FID=user).exists():
+        FriendInstance = Friends.objects.get(UID=friend, FID=user)
+        FriendInstance.delete()
+
     return JsonResponse({'Messages': "Deleted Successfully"}, safe=False, status=status.HTTP_200_OK)
 
 
@@ -222,11 +245,11 @@ def accept_request(request):
     friend = User.objects.get(username=username)
     user = User.objects.get(id=request.user.id)
     FriendRequestInstance = Friends.objects.get(
-        UID=user, FID=friend, status="Pending")
+        FID=user, UID=friend, status="Pending")
 
     FriendRequestInstance.status = "Friends"
     FriendRequestInstance.save()
-    NewFriendRequest = Friends(UID=friend, FID=user, status="Friends")
+    NewFriendRequest = Friends(FID=friend, UID=user, status="Friends")
     NewFriendRequest.save()
 
     return JsonResponse({'Messages': "Accepted Successfully"}, safe=False, status=status.HTTP_200_OK)

@@ -77,8 +77,15 @@ class JoinedGroupsSerializer(serializers.ModelSerializer):
         fields = ['GroupName', 'status', 'GID']
 
 
+class CheckFriendsStatus(serializers.ModelSerializer):
+
+    class Meta:
+        model = Friends
+        fields = ['status']
+
+
 class FriendsSerializer(serializers.ModelSerializer):
-    FriendName = serializers.CharField(source='FID', read_only=True)
+    FriendName = serializers.CharField(source='UID', read_only=True)
 
     class Meta:
         model = Friends
