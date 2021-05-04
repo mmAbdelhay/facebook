@@ -4,9 +4,10 @@ from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.response import Response
 
 from groups.models import Group,join
-from groups.api.serializers import GroupSerializer,JoinSerializer
+from groups.api.serializers import GroupSerializer,JoinSerializer,UserSerializer
 from Users.models import Post
 from posts.api.serializers import PostSerializer
+from django.contrib.auth.models import User
 
 class IsGroupCreator(BasePermission):
     def has_permission(self, request, view):
@@ -89,6 +90,14 @@ def create(request):
     serializer = GroupSerializer(data=updatedRequest)
     if serializer.is_valid():
         serializer.save()
+        CreatorUser={
+            "UID":request.user.id,
+            "GID":serializer.data['id'],
+            "status":"accepted"
+        }
+        serializer2 = JoinSerializer(data=CreatorUser)
+        if serializer2.is_valid():
+            serializer2.save()
         return Response(data={
             "success": True,
             "message": "group has been added successfully"
@@ -187,4 +196,21 @@ def get_posts_from_joined_groups(request,uid):
     allJoinedGroupsPosts=Post.objects.filter(group_ID__in=user_group_id).order_by('Time')
     print(allJoinedGroupsPosts)
     serializer = PostSerializer(instance=allJoinedGroupsPosts,many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_all_users(request,gid):    ######################## member
+    users_id = join.objects.filter(GID=gid).filter(status='accepted').values_list('UID')
+    all_group_users = User.objects.filter(id__in=users_id)
+    serializer = UserSerializer(instance=all_group_users,many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_created_groups(request):    ######################## member
+    user_id = request.user.id
+    createdGroups = Group.objects.filter(created_by=user_id)
+    serializer = GroupSerializer(instance=createdGroups,many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
