@@ -1,5 +1,5 @@
 from django.urls import path
-from groups.api.views import view_all_groups,show,create,api_delete_user_from_group,view_all_user_groups,api_delete_group,view_all_pending_user,get_all_group_posts,join_group_request,get_posts_from_joined_groups,approve_join_request
+from groups.api.views import view_all_groups,show,create,api_delete_user_from_group,view_all_user_groups,api_delete_group,view_all_pending_user,get_all_group_posts,join_group_request,get_posts_from_joined_groups,approve_join_request,get_all_users,get_created_groups
 
 urlpatterns = [
     path("", view_all_groups,name= "all_groups"),
@@ -12,5 +12,7 @@ urlpatterns = [
     path("posts/<int:gid>",get_all_group_posts),
     path("join",join_group_request),
     path("groupsposts/<int:uid>",get_posts_from_joined_groups),
-    path("approve/<int:uid>",approve_join_request)
+    path("approve/<int:uid>",approve_join_request),
+    path("users/<int:gid>",get_all_users),
+    path("createdbyyou",get_created_groups)
 ]
