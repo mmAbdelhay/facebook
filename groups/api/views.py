@@ -60,8 +60,9 @@ def view_all_groups(request):
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,IsGroupCreator))
 def view_all_pending_user(request,gid):
-    pending = join.objects.filter(GID=gid,status='pending')
-    serializer = JoinSerializer(instance=pending, many=True)
+    users_id = join.objects.filter(GID=gid).filter(status='pending').values_list('UID')
+    all_group_users = User.objects.filter(id__in=users_id)
+    serializer = UserSerializer(instance=all_group_users,many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -172,7 +173,7 @@ def join_group_request(request):    #takes only GID in body
 @api_view(["PUT"])
 @permission_classes((IsAuthenticated,IsGroupCreatorV2))
 def approve_join_request(request,uid):
-    updatedRequest=request.data.dict()
+    updatedRequest=request.data
     updatedRequest["UID"]=(uid)
     updatedRequest["status"]="accepted"
 
