@@ -54,10 +54,6 @@ def index(request):
                 print(item.GID)
 
             posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(group_ID__in=g))
-            # for item in groups:
-            #     print(item.GID.id)
-            #     print(Post.objects.filter(group_ID=item.GID))
-            # posts = Post.objects.filter(Q(poster_ID=request.user.id) | Q(group_ID__in=groups.GID))
         except:
             try:
                 print('3')
@@ -73,6 +69,13 @@ def index(request):
                     }, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = PostSerializer(instance=posts, many=True)
+    for item in serializer.data:
+        for like in item['liked_post']:
+            print(like['UID']['id'])
+            if like['UID']['id'] == request.user.id :
+                item ['liked'] = 1
+
+
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
