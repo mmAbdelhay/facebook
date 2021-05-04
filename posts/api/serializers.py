@@ -60,8 +60,10 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def save(self, id, request):
-        bad_words = ['bitch', 'fuck', 'shit', 'piss', 'dick', 'asshole', 'bastard', 'cunt', 'damn']
-        if any(x in request.data['content'] for x in bad_words):
+        bad_words = ['bitch', 'fuck', 'shit', 'piss', 'dick', 'asshole', 'bastard', 'cunt', 'damn', 'boobs',
+                     'pussy', 'nipples']
+        content = str(request.data['content'])
+        if any(x in content.lower() for x in bad_words):
             raise serializers.ValidationError({
                 'error': 'content contains bad words'
             })
