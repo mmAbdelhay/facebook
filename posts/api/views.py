@@ -118,7 +118,6 @@ def create(request):
 @permission_classes([IsAuthenticated])
 def addComment(request):
     serializer = CommentsSerializer(many=False, data=request.data)
-
     if serializer.is_valid():
         serializer.save(request.user.id)
         return Response(data={

@@ -18,10 +18,16 @@ class CommentsSerializer(serializers.ModelSerializer):
         # fields = "__all__"
         exclude = ('Time',)
 
-    def save(self, id):
-        comment = Comment(content=self.data['content'], UID=User.objects.get(pk=id),
-                          postID=Post.objects.get(pk=self.data['postID']))
-        comment.save()
+    def save(self, id, request):
+        bad_words = ['bitch', 'fuck', 'shit', 'piss', 'dick', 'asshole', 'bastard', 'cunt', 'damn']
+        if any(x in request.data['content'] for x in bad_words):
+            raise serializers.ValidationError({
+                'error': 'content contains bad words'
+            })
+        else:
+            comment = Comment(content=self.data['content'], UID=User.objects.get(pk=id),
+                              postID=Post.objects.get(pk=self.data['postID']))
+            comment.save()
 
     def delete(self):
         id = self.data.get('id')
@@ -54,24 +60,30 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def save(self, id, request):
-        if self.data['group_ID']:
-            try:
-                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
-                            group_ID=Group.objects.get(pk=self.data["group_ID"]), postImg=request.data['postImg'])
-                post.save()
-            except:
-                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
-                            group_ID=Group.objects.get(pk=self.data["group_ID"]))
-
-                post.save()
+        bad_words = ['bitch', 'fuck', 'shit', 'piss', 'dick', 'asshole', 'bastard', 'cunt', 'damn']
+        if any(x in request.data['content'] for x in bad_words):
+            raise serializers.ValidationError({
+                'error': 'content contains bad words'
+            })
         else:
-            try:
-                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
-                            postImg=request.data['postImg'])
-                post.save()
-            except:
-                post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
-                post.save()
+            if self.data['group_ID']:
+                try:
+                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                                group_ID=Group.objects.get(pk=self.data["group_ID"]), postImg=request.data['postImg'])
+                    post.save()
+                except:
+                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                                group_ID=Group.objects.get(pk=self.data["group_ID"]))
+
+                    post.save()
+            else:
+                try:
+                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                                postImg=request.data['postImg'])
+                    post.save()
+                except:
+                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
+                    post.save()
 
     def delete(self):
         id = self.data.get('id')
