@@ -10,11 +10,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username')
 
 
-
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = '__all__'
+
 
 class CommentsSerializer(serializers.ModelSerializer):
     UID = UserSerializer(read_only=True, many=False, required=False)
@@ -75,16 +75,18 @@ class PostSerializer(serializers.ModelSerializer):
                 'error': 'content contains bad words'
             })
         else:
-            if self.data['group_ID']:
-                try:
-                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
-                                group_ID=Group.objects.get(pk=self.data["group_ID"]), postImg=request.data['postImg'])
-                    post.save()
-                except:
-                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
-                                group_ID=Group.objects.get(pk=self.data["group_ID"]))
+            if 'group_ID' in self.data:
+                if self.data['group_ID']:
+                    try:
+                        post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                                    group_ID=Group.objects.get(pk=self.data["group_ID"]),
+                                    postImg=request.data['postImg'])
+                        post.save()
+                    except:
+                        post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                                    group_ID=Group.objects.get(pk=self.data["group_ID"]))
 
-                    post.save()
+                        post.save()
             else:
                 try:
                     post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
@@ -103,7 +105,8 @@ class PostSerializer(serializers.ModelSerializer):
         post.content = content
         post.save()
 
+
 class ProfileSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Profile
-            fields = ('profileImg',)
+    class Meta:
+        model = Profile
+        fields = ('profileImg',)

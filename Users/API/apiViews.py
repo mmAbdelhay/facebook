@@ -82,6 +82,65 @@ def get_user(request):
     return JsonResponse({'data': responeDictionary}, safe=False, status=status.HTTP_200_OK)
 
 
+
+@api_view(["GET"])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def get_users(request):
+    responeDictionary = {}
+    responeDictionary1 = []
+    users = User.objects.all()
+    for x in users:
+        if x.id != request.user.id:
+            print(x, x.id, x.username)
+            responeDictionary['name'] = x.username
+            friends = Friends.objects.filter(UID=x.id)
+            friendSerializer = FriendsSerializer(friends, many=True)
+            criterion1 = Q(UID=request.user.id)
+            criterion2 = Q(FID=x.id)
+            criterion3 = Q(FID=request.user.id)
+            criterion4 = Q(UID=x.id)
+            areTheyFriends = Friends.objects.filter(
+                criterion1 & criterion2 | criterion3 & criterion4).count()
+
+            if areTheyFriends == 0:
+                responeDictionary['friends'] = "Strangers"
+            elif areTheyFriends == 2:
+                responeDictionary['friends'] = "Friends"
+            else:
+                areTheyFriends = Friends.objects.filter(
+                    criterion1 & criterion2).count()
+                if areTheyFriends == 1:
+                    responeDictionary['friends'] = "Sent"
+                else:
+                    responeDictionary['friends'] = "Pending"
+
+        if bool(responeDictionary):
+            responeDictionary_cp = responeDictionary.copy()
+            print("hey: ", responeDictionary_cp)
+            responeDictionary1.append(responeDictionary_cp)
+            print("hello: ",responeDictionary1)
+
+
+
+
+
+
+    return JsonResponse({'data': responeDictionary1}, safe=False, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @api_view(["POST"])
 @csrf_exempt
 @permission_classes([IsAuthenticated])
