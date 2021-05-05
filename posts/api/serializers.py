@@ -81,3 +81,8 @@ class PostSerializer(serializers.ModelSerializer):
     def update(self, content, post):
         post.content = content
         post.save()
+
+class ProfileSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Profile
+            fields = ('profileImg',)

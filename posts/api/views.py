@@ -71,9 +71,39 @@ def index(request):
     serializer = PostSerializer(instance=posts, many=True)
     for item in serializer.data:
         for like in item['liked_post']:
-            print(like['UID']['id'])
-            if like['UID']['id'] == request.user.id :
-                item ['liked'] = 1
+            try:
+                profile = Profile.objects.get(user=like['UID']['id'])
+                profileSerializer = ProfileSerializer(instance=profile)
+                like['UID']['profileImg']=profileSerializer.data['profileImg']
+                # print(like['UID']['profileImg'])
+                if like['UID']['id'] == request.user.id :
+                   item ['liked'] = 1
+            except:
+                print("error")
+
+
+        for like in item['post']:
+            try:
+                profile = Profile.objects.get(user=like['UID']['id'])
+                profileSerializer = ProfileSerializer(instance=profile)
+                like['UID']['profileImg']=profileSerializer.data['profileImg']
+            except:
+                print('error')
+         # like in item['poster_ID']:
+        try:
+            profile = Profile.objects.get(user=item['poster_ID']['id'])
+            profileSerializer = ProfileSerializer(instance=profile)
+            item['poster_ID']['profileImg']=profileSerializer.data['profileImg']
+        except:
+            print('error')
+
+        #     print(like)
+        #     print (getattr(like, 'username'))
+        #     # profile = Profile.objects.get(user=like)
+        #     # profileSerializer = ProfileSerializer(instance=profile)
+        #     # like['profileImg']=profileSerializer.data['profileImg']
+
+
 
 
     return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -84,8 +114,67 @@ def index(request):
 def getMyPosts(request):
     posts = Post.objects.filter(poster_ID=request.user.id)
     serializer = PostSerializer(instance=posts, many=True)
+    for item in serializer.data:
+        for like in item['liked_post']:
+            try:
+                profile = Profile.objects.get(user=like['UID']['id'])
+                profileSerializer = ProfileSerializer(instance=profile)
+                like['UID']['profileImg'] = profileSerializer.data['profileImg']
+                # print(like['UID']['profileImg'])
+                if like['UID']['id'] == request.user.id:
+                    item['liked'] = 1
+            except:
+                print("error")
+
+        for like in item['post']:
+            try:
+                profile = Profile.objects.get(user=like['UID']['id'])
+                profileSerializer = ProfileSerializer(instance=profile)
+                like['UID']['profileImg'] = profileSerializer.data['profileImg']
+            except:
+                print('error')
+        # like in item['poster_ID']:
+        try:
+            profile = Profile.objects.get(user=item['poster_ID']['id'])
+            profileSerializer = ProfileSerializer(instance=profile)
+            item['poster_ID']['profileImg'] = profileSerializer.data['profileImg']
+        except:
+            print('error')
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getMyProfilePosts(request):
+    posts = Post.objects.filter(poster_ID=request.user.id).filter(group_ID=null)
+    serializer = PostSerializer(instance=posts, many=True)
+    for item in serializer.data:
+        for like in item['liked_post']:
+            try:
+                profile = Profile.objects.get(user=like['UID']['id'])
+                profileSerializer = ProfileSerializer(instance=profile)
+                like['UID']['profileImg'] = profileSerializer.data['profileImg']
+                # print(like['UID']['profileImg'])
+                if like['UID']['id'] == request.user.id:
+                    item['liked'] = 1
+            except:
+                print("error")
+
+        for like in item['post']:
+            try:
+                profile = Profile.objects.get(user=like['UID']['id'])
+                profileSerializer = ProfileSerializer(instance=profile)
+                like['UID']['profileImg'] = profileSerializer.data['profileImg']
+            except:
+                print('error')
+        # like in item['poster_ID']:
+        try:
+            profile = Profile.objects.get(user=item['poster_ID']['id'])
+            profileSerializer = ProfileSerializer(instance=profile)
+            item['poster_ID']['profileImg'] = profileSerializer.data['profileImg']
+        except:
+            print('error')
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
