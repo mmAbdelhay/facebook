@@ -145,8 +145,9 @@ def getMyPosts(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def getMyProfilePosts(request):
-    posts = Post.objects.filter(poster_ID=request.user.id).filter(group_ID=null)
+def gitPostsByName(request,name):
+    user = User.objects.get(username=name)
+    posts = Post.objects.filter(poster_ID=user.id).filter(group_ID__isnull=True)
     serializer = PostSerializer(instance=posts, many=True)
     for item in serializer.data:
         for like in item['liked_post']:

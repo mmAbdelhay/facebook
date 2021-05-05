@@ -12,7 +12,7 @@ from Users.models import Profile
 from Users.models import Post, Friends, Message
 import json
 from django.db.models import Q
-from posts.api.serializers import *
+from posts.api.serializers import PostSerializer
 from groups.models import join, Group
 from django.core.exceptions import ObjectDoesNotExist
 
