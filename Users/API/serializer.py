@@ -75,7 +75,7 @@ class JoinedGroupsSerializer(serializers.ModelSerializer):
     class Meta:
         model = join
         fields = ['GroupName', 'status', 'GID']
-
+0
 
 class CheckFriendsStatus(serializers.ModelSerializer):
 
