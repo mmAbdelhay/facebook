@@ -53,8 +53,12 @@ class IsMember(BasePermission):
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
 def view_all_groups(request):
-    groups = Group.objects.all()
-    serializer = GroupSerializer(instance=groups, many=True)
+    users_id = join.objects.filter(UID = request.user.id).values_list('GID')
+    print(users_id)
+    print(request.user.id)
+    all_group = Group.objects.exclude(id__in=users_id)
+    print(all_group)
+    serializer = GroupSerializer(instance=all_group, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET',])
@@ -68,8 +72,8 @@ def view_all_pending_user(request,gid):
 
 @api_view(['GET',])
 @permission_classes((IsAuthenticated,))
-def view_all_user_groups(request,uid):
-    user_group_id = join.objects.filter(UID=uid).filter(status='accepted').values_list('GID') 
+def view_all_user_groups(request):
+    user_group_id = join.objects.filter(UID=request.user.id).filter(status='accepted').values_list('GID')
     user_groups = Group.objects.filter(id__in=user_group_id.all())
     serializer = GroupSerializer(instance=user_groups, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -160,9 +164,12 @@ def get_all_group_posts(request,gid):    ######################## member
 
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
-def join_group_request(request):    #takes only GID in body
-    updatedRequest=request.data.dict()
+def join_group_request(request):
+    print(request.data)#takes only GID in body
+    updatedRequest=request.data
+    print(updatedRequest)
     updatedRequest["UID"]=(request.user.id)
+    print(updatedRequest)
     serializer = JoinSerializer(data=updatedRequest)
     if serializer.is_valid():
         serializer.save()
