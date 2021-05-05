@@ -7,7 +7,6 @@ urlpatterns = [
     path("", views.index),
     path("myPosts", views.getMyPosts),
     path("profile/posts/<name>", views.gitPostsByName),
-    path("comments", views.index2),
     path('create', views.create),
     path('addComment', views.addComment),
     path('like', views.like),
