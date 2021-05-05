@@ -10,6 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username')
 
 
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = '__all__'
+
 class CommentsSerializer(serializers.ModelSerializer):
     UID = UserSerializer(read_only=True, many=False, required=False)
 
@@ -54,6 +60,7 @@ class PostSerializer(serializers.ModelSerializer):
     post = CommentsSerializer(read_only=True, many=True)
     liked_post = LikesSerializer(read_only=True, many=True)
     poster_ID = UserSerializer(read_only=True, many=False)
+    group_ID = GroupSerializer(read_only=True, many=False)
 
     class Meta:
         model = Post
