@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from django.db.models import Q
 from groups.models import Group, join
 from groups.api.serializers import GroupSerializer, JoinSerializer, UserSerializer
-from Users.models import Post
-from posts.api.serializers import PostSerializer
+from Users.models import Post,Profile
+from posts.api.serializers import PostSerializer,ProfileSerializer
 from django.contrib.auth.models import User
 
 
@@ -102,6 +102,42 @@ def show(request, id):
     if joined == 1:
         posts = Post.objects.filter(group_ID=one_group.id)
         postSerializer = PostSerializer(instance=posts, many=True)
+
+        for item in postSerializer.data:
+            if item['poster_ID']['id'] == request.user.id:
+                item['mypost'] = 1
+            for like in item['liked_post']:
+                try:
+                    profile = Profile.objects.get(user=like['UID']['id'])
+                    profileSerializer = ProfileSerializer(instance=profile)
+                    like['UID']['profileImg'] = profileSerializer.data['profileImg']
+                    if like['UID']['id'] == request.user.id:
+                        item['liked'] = 1
+                except:
+                    print("error")
+
+            for like in item['post']:
+                if like['UID']['id'] == request.user.id:
+                    like['mycomment'] = 1
+                try:
+                    profile = Profile.objects.get(user=like['UID']['id'])
+                    profileSerializer = ProfileSerializer(instance=profile)
+                    like['UID']['profileImg'] = profileSerializer.data['profileImg']
+                except:
+                    print('error')
+            try:
+                print('=====')
+                print(item['poster_ID']['id'])
+                profile = Profile.objects.get(user=item['poster_ID']['id'])
+                print(profile)
+                profileSerializer = ProfileSerializer(instance=profile)
+                item['poster_ID']['profileImg'] = profileSerializer.data['profileImg']
+            except:
+                print('error')
+
+
+
+
         GroupData = {
             'GroupData': serializer.data,
             'joined': joined,
