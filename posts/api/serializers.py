@@ -75,7 +75,7 @@ class PostSerializer(serializers.ModelSerializer):
                 'error': 'content contains bad words'
             })
         else:
-            if request.data['group_ID']:
+            if 'group_ID' in request.data:
                 try:
                     post = Post(content=request.data['content'], poster_ID=User.objects.get(pk=id),
                                 group_ID=Group.objects.get(pk=request.data["group_ID"]), postImg=request.data['postImg'])
