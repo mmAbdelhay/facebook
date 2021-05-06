@@ -227,6 +227,14 @@ def api_delete_user_from_group(request):
     if len(customer) != 0:
         operation = customer[0].delete()
         if operation:
+            # recipientUser=User.objects.get(id=uid)
+            # delGroup=Group.objects.get(id=gid)
+            # subject, from_email, to = 'Removed', EMAIL_HOST_USER, recipientUser.email
+            # text_content = f"You have been removed from Group:{delGroup.name}"
+            # html_content = f'<div style="border:2px solid black;width:50%;margin:auto;padding:10px;background-color: #EEEEEE;"><h2>REMOVAL NOTIFICATION :</h2><p>You have been removed from Group:<strong>{delGroup.name}</strong> </p></div>'
+            # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            # msg.attach_alternative(html_content, "text/html")
+            # msg.send()
             data = {"success": True}
             return Response(data=data, status=status.HTTP_200_OK)
         else:
