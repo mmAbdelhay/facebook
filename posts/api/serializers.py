@@ -95,7 +95,7 @@ class PostSerializer(serializers.ModelSerializer):
                     post.save()
 
     def delete(self):
-        id = request.data.get('id')
+        id = self.data.get('id')
         post = Post.objects.get(pk=id)
         post.delete()
 
