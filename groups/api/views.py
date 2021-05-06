@@ -231,7 +231,7 @@ def api_delete_user_from_group(request):
             # delGroup=Group.objects.get(id=gid)
             # subject, from_email, to = 'Removed', EMAIL_HOST_USER, recipientUser.email
             # text_content = f"You have been removed from Group:{delGroup.name}"
-            # html_content = f'<div style="border:2px solid black;width:50%;margin:auto;padding:10px;background-color: #EEEEEE;"><h2>REMOVAL NOTIFICATION :</h2><p>You have been removed from Group:<strong>{delGroup.name}</strong> </p></div>'
+            # html_content = f'<div style="box-sizing: border-box;border: 1px solid #292929;width:50%;height: 200px;margin:auto;margin-top: 40px;"><div style="background-color: orangered;"><h2 style="padding: 10px;width: fit-content;margin: auto;color: white;">REMOVAL NOTIFICATION :</h2></div><p style="width: fit-content;margin: auto;margin-top: 50px;">You have been removed from Group:<strong>{delGroup.name}</strong> </p></div>'
             # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
             # msg.attach_alternative(html_content, "text/html")
             # msg.send()
@@ -279,7 +279,7 @@ def join_group_request(request):
         # requestedGroup = Group.objects.get(id=(updatedRequest["GID"]))
         # subject, from_email, to = 'join group request notification', EMAIL_HOST_USER, requestedGroup.created_by.email
         # text_content = f"USER : {request.user.username} have sent a request to join your GROUP : {requestedGroup.name} and waiting for your approval"
-        # html_content = f'<div style="border:2px solid black;width:50%;margin:auto;padding:10px;background-color: #EEEEEE;"><h2>NOTIFICATION :</h2><p>USER : <strong>{request.user.username}</strong> have sent a request to join your GROUP : <strong>{requestedGroup.name}</strong> and waiting for your approval.</p></div>'
+        # html_content = f'<div style="box-sizing: border-box;border: 1px solid #292929;width:50%;height: 200px;margin:auto;margin-top: 40px;"><div style="background-color: orangered;"><h2 style="padding: 10px;width: fit-content;margin: auto;color: white;">NOTIFICATION :</h2></div><p style="width: fit-content;margin: auto;margin-top: 50px;">USER : <strong>{request.user.username}</strong> have sent a request to join your GROUP : <strong>{requestedGroup.name}</strong> and waiting for your approval.</strong> </p></div>'
         # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         # msg.attach_alternative(html_content, "text/html")
         # msg.send()
@@ -301,7 +301,7 @@ def approve_join_request(request,uid):
         # approvedGroup=Group.objects.get(id=(updatedRequest["GID"]))
         # subject, from_email, to = 'Approved', EMAIL_HOST_USER, recipientUser.email
         # text_content = f"Your request to join Group:{approvedGroup.name} have been approved"
-        # html_content = f'<div style="border:2px solid black;width:50%;margin:auto;padding:10px;background-color: #EEEEEE;"><h2>APPROVAL NOTIFICATION :</h2><p>Your request to join Group:<strong>{approvedGroup.name}</strong> have been approved</p></div>'
+        # html_content = f'<div style="box-sizing: border-box;border: 1px solid #292929;width:50%;height: 200px;margin:auto;margin-top: 40px;"><div style="background-color: orangered;"><h2 style="padding: 10px;width: fit-content;margin: auto;color: white;">APPROVAL NOTIFICATION :</h2></div><p style="width: fit-content;margin: auto;margin-top: 50px;">Your request to join Group:<strong>{approvedGroup.name}</strong> have been approved</p></div>'
         # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         # msg.attach_alternative(html_content, "text/html")
         # msg.send()
