@@ -69,14 +69,8 @@ def index(request):
                     }, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = PostSerializer(instance=posts, many=True)
-    for item in serializer.data:
-        for like in item['liked_post']:
-            print(like['UID']['id'])
-            if like['UID']['id'] == request.user.id :
-                item ['liked'] = 1
+    return CreatePostJson(serializer,request)
 
-
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -84,16 +78,16 @@ def index(request):
 def getMyPosts(request):
     posts = Post.objects.filter(poster_ID=request.user.id)
     serializer = PostSerializer(instance=posts, many=True)
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
-
+    return CreatePostJson(serializer, request)
 
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def index2(request):
-    posts = Comment.objects.all()
-    serializer = CommentsSerializer(instance=posts, many=True)
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
+def gitPostsByName(request,name):
+    user = User.objects.get(username=name)
+    posts = Post.objects.filter(poster_ID=user.id).filter(group_ID__isnull=True)
+    serializer = PostSerializer(instance=posts, many=True)
+    return CreatePostJson(serializer, request)
 
 
 @api_view(["POST"])
@@ -119,7 +113,7 @@ def create(request):
 def addComment(request):
     serializer = CommentsSerializer(many=False, data=request.data)
     if serializer.is_valid():
-        serializer.save(request.user.id)
+        serializer.save(request.user.id,request)
         return Response(data={
             'message': 'comment added',
             'success': True
@@ -230,3 +224,36 @@ def update(request, id):
         'Error': serializer.errors,
         'success': False
     }, status=status.HTTP_400_BAD_REQUEST)
+
+
+def CreatePostJson(serializer,request) :
+        for item in serializer.data:
+            if item['poster_ID']['id'] == request.user.id:
+                item['mypost'] = 1
+            for like in item['liked_post']:
+                try:
+                    profile = Profile.objects.get(user=like['UID']['id'])
+                    profileSerializer = ProfileSerializer(instance=profile)
+                    like['UID']['profileImg'] = profileSerializer.data['profileImg']
+                    if like['UID']['id'] == request.user.id:
+                        item['liked'] = 1
+                except:
+                    print("error")
+
+            for like in item['post']:
+                if like['UID']['id'] == request.user.id:
+                    like['mycomment'] = 1
+                try:
+                    profile = Profile.objects.get(user=like['UID']['id'])
+                    profileSerializer = ProfileSerializer(instance=profile)
+                    like['UID']['profileImg'] = profileSerializer.data['profileImg']
+                except:
+                    print('error')
+            try:
+                profile = Profile.objects.get(user=item['poster_ID']['id'])
+                profileSerializer = ProfileSerializer(instance=profile)
+                item['poster_ID']['profileImg'] = profileSerializer.data['profileImg']
+            except:
+                print('error')
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)

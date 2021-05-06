@@ -10,6 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username')
 
 
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = '__all__'
+
 class CommentsSerializer(serializers.ModelSerializer):
     UID = UserSerializer(read_only=True, many=False, required=False)
 
@@ -54,6 +60,7 @@ class PostSerializer(serializers.ModelSerializer):
     post = CommentsSerializer(read_only=True, many=True)
     liked_post = LikesSerializer(read_only=True, many=True)
     poster_ID = UserSerializer(read_only=True, many=False)
+    group_ID = GroupSerializer(read_only=True, many=False)
 
     class Meta:
         model = Post
@@ -68,30 +75,35 @@ class PostSerializer(serializers.ModelSerializer):
                 'error': 'content contains bad words'
             })
         else:
-            if self.data['group_ID']:
+            if 'group_ID' in request.data:
                 try:
-                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
-                                group_ID=Group.objects.get(pk=self.data["group_ID"]), postImg=request.data['postImg'])
+                    post = Post(content=request.data['content'], poster_ID=User.objects.get(pk=id),
+                                group_ID=Group.objects.get(pk=request.data["group_ID"]), postImg=request.data['postImg'])
                     post.save()
                 except:
-                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
-                                group_ID=Group.objects.get(pk=self.data["group_ID"]))
+                    post = Post(content=request.data['content'], poster_ID=User.objects.get(pk=id),
+                                group_ID=Group.objects.get(pk=request.data["group_ID"]))
 
                     post.save()
             else:
                 try:
-                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id),
+                    post = Post(content=request.data['content'], poster_ID=User.objects.get(pk=id),
                                 postImg=request.data['postImg'])
                     post.save()
                 except:
-                    post = Post(content=self.data['content'], poster_ID=User.objects.get(pk=id))
+                    post = Post(content=request.data['content'], poster_ID=User.objects.get(pk=id))
                     post.save()
 
     def delete(self):
-        id = self.data.get('id')
+        id = request.data.get('id')
         post = Post.objects.get(pk=id)
         post.delete()
 
     def update(self, content, post):
         post.content = content
         post.save()
+
+class ProfileSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Profile
+            fields = ('profileImg',)
