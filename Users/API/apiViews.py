@@ -91,7 +91,7 @@ def get_users(request):
     responeDictionary1 = []
     users = User.objects.all()
     for x in users:
-        if x.id != request.user.id:
+        if (x.id != request.user.id) & (not (x.is_superuser)):
             print(x, x.id, x.username)
             responeDictionary['name'] = x.username
             friends = Friends.objects.filter(UID=x.id)
@@ -115,7 +115,8 @@ def get_users(request):
                 else:
                     responeDictionary['friends'] = "Pending"
 
-        if bool(responeDictionary):
+        print(not (responeDictionary in responeDictionary1))
+        if bool(responeDictionary) & (not (responeDictionary in responeDictionary1)):
             responeDictionary_cp = responeDictionary.copy()
             print("hey: ", responeDictionary_cp)
             responeDictionary1.append(responeDictionary_cp)
