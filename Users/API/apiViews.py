@@ -17,6 +17,10 @@ from groups.models import join, Group
 from django.core.exceptions import ObjectDoesNotExist
 
 
+from django.core.mail import send_mail
+from facebook.settings import EMAIL_HOST_USER
+from django.core.mail import EmailMultiAlternatives
+
 @api_view(["POST"])
 def api_signup(request):
     serializer = ProfileSerializer(data=request.data)
@@ -160,6 +164,16 @@ def send_message(request, username):
     )
     print(message)
     serializer = MessageSerializer(message)
+
+
+
+    subject, from_email, to = 'new message', EMAIL_HOST_USER, receiver.email
+    text_content = f"You have  received a new message from {request.user.username}"
+    html_content = f'<div style="box-sizing: border-box;border: 1px solid #292929;width:50%;height: 200px;margin:auto;margin-top: 40px;"><div style="background-color: orangered;"><h2 style="padding: 10px;width: fit-content;margin: auto;color: white;">NEW MESSAGE NOTIFICATION :</h2></div><p style="width: fit-content;margin: auto;margin-top: 50px;">You have recieved a new message from {request.user.username} </p></div>'
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
     return JsonResponse({'message': serializer.data}, safe=False, status=status.HTTP_201_CREATED)
 
 
