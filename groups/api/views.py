@@ -84,6 +84,14 @@ def view_all_user_groups(request):
     serializer = GroupSerializer(instance=user_groups, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET', ])
+@permission_classes((IsAuthenticated,))
+def view_all_user_requested_groups(request):
+    user_group_id = join.objects.filter(UID=request.user.id).filter(status='pending').values_list('GID')
+    user_groups = Group.objects.filter(id__in=user_group_id.all())
+    serializer = GroupSerializer(instance=user_groups, many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
@@ -177,7 +185,32 @@ def create(request):
         "errors": serializer.errors
     }, status=status.HTTP_400_BAD_REQUEST)
 
+# IsGroupCreatorV3
+@api_view(['DELETE', ])
+@permission_classes((IsAuthenticated, ))
+def api_delete_user_request_from_group(request):
+    # uid = request.query_params.get('uid', None)
+    uid = request.user.id
+    gid = request.query_params.get('gid', None)
+    try:
+        customer = join.objects.filter(UID=uid, GID=gid)
+    except join.DoesNotExist:
+        data = {"success": False, "error": {"code": 404, "message": "record not found"}}
+        return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+    if len(customer) != 0:
+        operation = customer[0].delete()
+        if operation:
+            data = {"success": True}
+            return Response(data=data, status=status.HTTP_200_OK)
+        else:
+            data = {"success": False}
+            return Response(data=data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        data = {"success": False, "error": {"code": 400, "message": "required parameters"}}
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
+
+# IsGroupCreatorV3
 @api_view(['DELETE', ])
 @permission_classes((IsAuthenticated, IsGroupCreatorV3))
 def api_delete_user_from_group(request):
@@ -199,7 +232,6 @@ def api_delete_user_from_group(request):
     else:
         data = {"success": False, "error": {"code": 400, "message": "required parameters"}}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['DELETE', ])
 @permission_classes((IsAuthenticated, IsGroupCreator))
