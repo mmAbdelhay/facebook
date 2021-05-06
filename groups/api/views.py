@@ -9,6 +9,10 @@ from Users.models import Post
 from posts.api.serializers import PostSerializer
 from django.contrib.auth.models import User
 
+from django.core.mail import send_mail
+from facebook.settings import EMAIL_HOST_USER
+from django.core.mail import EmailMultiAlternatives
+
 class IsGroupCreator(BasePermission):
     def has_permission(self, request, view):
         userId = request.user.id
@@ -165,14 +169,18 @@ def get_all_group_posts(request,gid):    ######################## member
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def join_group_request(request):
-    print(request.data)#takes only GID in body
-    updatedRequest=request.data
-    print(updatedRequest)
+    updatedRequest=request.data        #emsa7 el .dict()
     updatedRequest["UID"]=(request.user.id)
-    print(updatedRequest)
     serializer = JoinSerializer(data=updatedRequest)
     if serializer.is_valid():
         serializer.save()
+        # requestedGroup = Group.objects.get(id=(updatedRequest["GID"]))
+        # subject, from_email, to = 'join group request notification', EMAIL_HOST_USER, requestedGroup.created_by.email
+        # text_content = f"USER : {request.user.username} have sent a request to join your GROUP : {requestedGroup.name} and waiting for your approval"
+        # html_content = f'<div style="border:2px solid black;width:50%;margin:auto;padding:10px;background-color: #EEEEEE;"><h2>NOTIFICATION :</h2><p>USER : <strong>{request.user.username}</strong> have sent a request to join your GROUP : <strong>{requestedGroup.name}</strong> and waiting for your approval.</p></div>'
+        # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        # msg.attach_alternative(html_content, "text/html")
+        # msg.send()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
@@ -183,15 +191,18 @@ def approve_join_request(request,uid):
     updatedRequest=request.data
     updatedRequest["UID"]=(uid)
     updatedRequest["status"]="accepted"
-
     oldJoin=join.objects.filter(UID=uid).get(GID=(updatedRequest["GID"]))
-
-    print(updatedRequest)
-    print(oldJoin)
-
     serializers = JoinSerializer(oldJoin,updatedRequest)
     if serializers.is_valid():
         serializers.save()
+        # recipientUser=User.objects.get(id=uid)
+        # approvedGroup=Group.objects.get(id=(updatedRequest["GID"]))
+        # subject, from_email, to = 'Approved', EMAIL_HOST_USER, recipientUser.email
+        # text_content = f"Your request to join Group:{approvedGroup.name} have been approved"
+        # html_content = f'<div style="border:2px solid black;width:50%;margin:auto;padding:10px;background-color: #EEEEEE;"><h2>APPROVAL NOTIFICATION :</h2><p>Your request to join Group:<strong>{approvedGroup.name}</strong> have been approved</p></div>'
+        # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        # msg.attach_alternative(html_content, "text/html")
+        # msg.send()
         return Response(serializers.data)
     return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
@@ -200,9 +211,7 @@ def approve_join_request(request,uid):
 @permission_classes((IsAuthenticated,))
 def get_posts_from_joined_groups(request,uid):
     user_group_id = join.objects.filter(UID=uid).filter(status='accepted').values_list('GID')
-    print(user_group_id)
     allJoinedGroupsPosts=Post.objects.filter(group_ID__in=user_group_id).order_by('Time')
-    print(allJoinedGroupsPosts)
     serializer = PostSerializer(instance=allJoinedGroupsPosts,many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
