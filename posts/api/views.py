@@ -6,6 +6,9 @@ from django.db.models import Q
 from Users.models import Post, Comment, Like
 from groups.models import *
 from posts.api.serializers import *
+from django.core.mail import send_mail
+from facebook.settings import EMAIL_HOST_USER
+from django.core.mail import EmailMultiAlternatives
 
 
 @api_view(["GET"])
@@ -97,6 +100,19 @@ def create(request):
     # print(request.user.id);
     if serializer.is_valid():
         serializer.save(request.user.id, request)
+
+
+        # recipientList = User.objects.filter(FID=request.user.id)
+        # for user in recipientList.iterator():
+        #     subject, from_email, to = 'NewPost', EMAIL_HOST_USER, user.email
+            # text_content = f"{request.user.username} added new post"
+            # html_content = f'<div style="box-sizing: border-box;border: 1px solid #292929;width:50%;height: 200px;margin:auto;margin-top: 40px;"><div style="background-color: orangered;"><h2 style="padding: 10px;width: fit-content;margin: auto;color: white;">REMOVAL NOTIFICATION :</h2></div><p style="width: fit-content;margin: auto;margin-top: 50px;">{request.user.username} added new post</strong> </p></div>'
+            # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            # msg.attach_alternative(html_content, "text/html")
+            # msg.send()
+
+
+
         return Response(data={
             "success": True,
             "message": "post has been added successfully"
@@ -114,6 +130,20 @@ def addComment(request):
     serializer = CommentsSerializer(many=False, data=request.data)
     if serializer.is_valid():
         serializer.save(request.user.id,request)
+
+
+        # recipientList = User.objects.filter(FID=request.user.id)
+        # for user in recipientList.iterator():
+        #     subject, from_email, to = 'NewPost', EMAIL_HOST_USER, user.email
+            # text_content = f"{request.user.username} added new comment"
+            # html_content = f'<div style="box-sizing: border-box;border: 1px solid #292929;width:50%;height: 200px;margin:auto;margin-top: 40px;"><div style="background-color: orangered;"><h2 style="padding: 10px;width: fit-content;margin: auto;color: white;">REMOVAL NOTIFICATION :</h2></div><p style="width: fit-content;margin: auto;margin-top: 50px;">{request.user.username} added new comment</strong> </p></div>'
+            # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            # msg.attach_alternative(html_content, "text/html")
+            # msg.send()
+
+
+
+
         return Response(data={
             'message': 'comment added',
             'success': True
@@ -173,6 +203,14 @@ def delete(request, id):
     serializer = PostSerializer(instance=post, many=False)
     if request.user.id == post.poster_ID.id:
         serializer.delete()
+        # recipientList = User.objects.filter(FID=request.user.id)
+        # for user in recipientList.iterator():
+        #     subject, from_email, to = 'NewPost', EMAIL_HOST_USER, user.email
+        # text_content = f"{request.user.username} deleted post"
+        # html_content = f'<div style="box-sizing: border-box;border: 1px solid #292929;width:50%;height: 200px;margin:auto;margin-top: 40px;"><div style="background-color: orangered;"><h2 style="padding: 10px;width: fit-content;margin: auto;color: white;">REMOVAL NOTIFICATION :</h2></div><p style="width: fit-content;margin: auto;margin-top: 50px;">{request.user.username} deleted post</strong> </p></div>'
+        # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        # msg.attach_alternative(html_content, "text/html")
+        # msg.send()
         return Response(data={
             'message': 'deleted',
             'success': True
@@ -192,6 +230,14 @@ def deleteComment(request, id):
     print(request.user.id)
     if request.user.id == comment.UID.id :
         serializer.delete()
+        # recipientList = User.objects.filter(FID=request.user.id)
+        # for user in recipientList.iterator():
+        #     subject, from_email, to = 'NewPost', EMAIL_HOST_USER, user.email
+        # text_content = f"{request.user.username} deleted comment"
+        # html_content = f'<div style="box-sizing: border-box;border: 1px solid #292929;width:50%;height: 200px;margin:auto;margin-top: 40px;"><div style="background-color: orangered;"><h2 style="padding: 10px;width: fit-content;margin: auto;color: white;">REMOVAL NOTIFICATION :</h2></div><p style="width: fit-content;margin: auto;margin-top: 50px;">{request.user.username} deleted comment</strong> </p></div>'
+        # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        # msg.attach_alternative(html_content, "text/html")
+        # msg.send()
         return Response(data={
             'message': 'deleted',
             'success': True
