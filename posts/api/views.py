@@ -102,7 +102,7 @@ def create(request):
         serializer.save(request.user.id, request)
 
 
-        # recipientList = User.objects.filter(FID=request.user.id)
+        # recipientList = Friends.objects.filter(FID=request.user.id)
         # for user in recipientList.iterator():
         #     subject, from_email, to = 'NewPost', EMAIL_HOST_USER, user.email
             # text_content = f"{request.user.username} added new post"
@@ -132,7 +132,7 @@ def addComment(request):
         serializer.save(request.user.id,request)
 
 
-        # recipientList = User.objects.filter(FID=request.user.id)
+        # recipientList = Friends.objects.filter(FID=request.user.id)
         # for user in recipientList.iterator():
         #     subject, from_email, to = 'NewPost', EMAIL_HOST_USER, user.email
             # text_content = f"{request.user.username} added new comment"
@@ -203,7 +203,7 @@ def delete(request, id):
     serializer = PostSerializer(instance=post, many=False)
     if request.user.id == post.poster_ID.id:
         serializer.delete()
-        # recipientList = User.objects.filter(FID=request.user.id)
+        # recipientList = Friends.objects.filter(FID=request.user.id)
         # for user in recipientList.iterator():
         #     subject, from_email, to = 'NewPost', EMAIL_HOST_USER, user.email
         # text_content = f"{request.user.username} deleted post"
@@ -230,7 +230,7 @@ def deleteComment(request, id):
     print(request.user.id)
     if request.user.id == comment.UID.id :
         serializer.delete()
-        # recipientList = User.objects.filter(FID=request.user.id)
+        # recipientList = Friends.objects.filter(FID=request.user.id)
         # for user in recipientList.iterator():
         #     subject, from_email, to = 'NewPost', EMAIL_HOST_USER, user.email
         # text_content = f"{request.user.username} deleted comment"
